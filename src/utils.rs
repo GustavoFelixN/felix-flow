@@ -1,5 +1,12 @@
 pub(crate) fn extract_digits(s: &str) -> (&str, &str) {
-    (&s[1..], &s[0..1])
+    let digits_end = s
+        .char_indices()
+        .find_map(|(id, c)| if c.is_ascii_digit() { None } else { Some(id) })
+        .unwrap_or_else(|| s.len());
+
+    let digits = &s[..digits_end];
+    let remainder = &s[digits_end..];
+    (remainder, digits)
 }
 
 #[cfg(test)]
@@ -9,5 +16,15 @@ mod tests {
     #[test]
     fn extract_one_digit() {
         assert_eq!(extract_digits("1+2"), ("+2", "1"));
+    }
+
+    #[test]
+    fn do_not_extract_anything_from_empty_input() {
+        assert_eq!(extract_digits(""), ("", ""));
+    }
+
+    #[test]
+    fn extract_digits_with_no_remainder() {
+        assert_eq!(extract_digits("100"), ("", "100"));
     }
 }
