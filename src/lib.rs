@@ -54,4 +54,16 @@ mod tests {
     fn parse_div_op() {
         assert_eq!(Op::new("/"), Op::Div)
     }
+
+    #[test]
+    fn parse_one_plus_two() {
+        assert_eq!(
+            Expr::new("1+2"),
+            Expr {
+                lhs: Number(1),
+                rhs: Number(2),
+                op: Op::Add,
+            }
+        )
+    }
 }
