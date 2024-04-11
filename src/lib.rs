@@ -1,3 +1,5 @@
+mod utils;
+
 #[derive(Debug, PartialEq)]
 pub struct Number(pub i32);
 
@@ -23,6 +25,23 @@ impl Op {
             "/" => Self::Div,
             _ => panic!("bad operator"),
         }
+    }
+}
+
+#[derive(Debug, PartialEq)]
+pub struct Expr {
+    lhs: Number,
+    rhs: Number,
+    op: Op,
+}
+
+impl Expr {
+    pub fn new(s: &str) -> Self {
+        let lhs = Number::new(s);
+        let rhs = Number::new(s);
+        let op = Op::new(s);
+
+        Self { lhs, rhs, op }
     }
 }
 
