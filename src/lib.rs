@@ -6,6 +6,25 @@ impl Number {
         Self(s.parse().unwrap())
     }
 }
+#[derive(Debug, PartialEq)]
+pub enum Op {
+    Add,
+    Sub,
+    Mul,
+    Div,
+}
+
+impl Op {
+    pub fn new(s: &str) -> Self {
+        match s {
+            "+" => Self::Add,
+            "-" => Self::Sub,
+            "*" => Self::Mul,
+            "/" => Self::Div,
+            _ => panic!("bad operator"),
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -28,7 +47,7 @@ mod tests {
 
     #[test]
     fn parse_mul_op() {
-        assert_eq!(Op::new("*"), Op::Div)
+        assert_eq!(Op::new("*"), Op::Mul)
     }
 
     #[test]
