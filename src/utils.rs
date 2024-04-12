@@ -18,6 +18,17 @@ pub(crate) fn extract_op(s: &str) -> (&str, &str) {
     (&s[1..], &s[0..1])
 }
 
+pub(crate) fn extract_whitespace(s: &str) -> (&str, &str) {
+    let whitrspace_end = s
+        .char_indices()
+        .find_map(|(id, c)| if c == ' ' { None } else { Some(id) })
+        .unwrap_or_else(|| s.len());
+
+    let whitespace = &s[..whitrspace_end];
+    let remainder = &s[whitrspace_end..];
+    (remainder, whitespace)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -60,5 +71,10 @@ mod tests {
     #[test]
     fn extract_slash() {
         assert_eq!(extract_op("/4"), ("4", "/"));
+    }
+
+    #[test]
+    fn extract_spaces() {
+        assert_eq!(extract_whitespace("   1"), ("1", "   "));
     }
 }
