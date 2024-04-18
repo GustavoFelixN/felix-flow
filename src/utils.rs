@@ -80,6 +80,11 @@ mod tests {
     }
 
     #[test]
+    fn extract_alphabetic_ident() {
+        assert_eq!(extract_ident("abcdEFG stop"), (" stop", "abcdEFG"));
+    }
+
+    #[test]
     fn extract_alphanumeric_ident() {
         assert_eq!(extract_ident("foobar1()"), ("()", "foobar1"));
     }
