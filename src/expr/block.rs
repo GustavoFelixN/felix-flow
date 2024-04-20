@@ -24,9 +24,10 @@ impl Block {
 
 #[cfg(test)]
 mod tests {
-    use crate::expr::{Expr, Number};
-
+    use super::super::{Expr, Number};
     use super::*;
+    use crate::binding_def::BindingDef;
+    use crate::expr::binding_usage::BindingUsage;
 
     #[test]
     fn parse_empty_block() {
@@ -46,6 +47,39 @@ mod tests {
                 "",
                 Block {
                     stmts: vec![Stmt::Expr(Expr::Number(Number(5)))]
+                }
+            ))
+        )
+    }
+
+    #[test]
+    fn parse_block_with_multiple_statements() {
+        assert_eq!(
+            Block::new(
+                "{
+    let a = 10
+    let b = a
+    b
+}"
+            ),
+            Ok((
+                "",
+                Block {
+                    stmts: vec![
+                        Stmt::BindingDef(BindingDef {
+                            name: "a".to_string(),
+                            val: Expr::Number(Number(10)),
+                        }),
+                        Stmt::BindingDef(BindingDef {
+                            name: "b".to_string(),
+                            val: Expr::BindingUsage(BindingUsage {
+                                name: "a".to_string()
+                            })
+                        }),
+                        Stmt::Expr(Expr::BindingUsage(BindingUsage {
+                            name: "b".to_string()
+                        })),
+                    ]
                 }
             ))
         )
