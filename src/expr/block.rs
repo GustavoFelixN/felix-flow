@@ -27,10 +27,31 @@ impl Block {
     }
 
     pub(crate) fn eval(&self, env: &Env) -> Result<Val, String> {
-        self.stmts.last().map_or(Ok(Val::Unit), |stmt| match stmt {
-            Stmt::BindingDef(_) => todo!(),
-            Stmt::Expr(expr) => expr.eval(env),
-        })
+        if self.stmts.is_empty() {
+            return Ok(Val::Unit);
+        }
+
+        let mut env = Env::default();
+
+        let stmts_except_last = &self.stmts[..self.stmts.len() - 1];
+        for stmt in stmts_except_last {
+            match stmt {
+                Stmt::BindingDef(binding_def) => binding_def.eval(&mut env)?,
+                Stmt::Expr(expr) => {
+                    expr.eval(&env)?;
+                }
+            }
+        }
+
+        let last = self.stmts.last().unwrap();
+
+        match last {
+            Stmt::BindingDef(binding_def) => {
+                binding_def.eval(&mut env)?;
+                Ok(Val::Unit)
+            }
+            Stmt::Expr(expr) => expr.eval(&env),
+        }
     }
 }
 
