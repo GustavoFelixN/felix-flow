@@ -10,11 +10,16 @@ impl Block {
         let s = utils::tag("{", s)?;
         let (s, _) = utils::extract_whitespace(s);
 
-        let (s, stmts) = if let Ok((s, stmt)) = Stmt::new(s) {
-            (s, vec![stmt])
-        } else {
-            (s, Vec::new())
-        };
+        let mut s = s;
+        let mut stmts = Vec::new();
+
+        while let Ok((new_s, stmt)) = Stmt::new(s) {
+            s = new_s;
+            stmts.push(stmt);
+
+            let (new_s, _) = utils::extract_whitespace(s);
+            s = new_s;
+        }
 
         let (s, _) = utils::extract_whitespace(s);
         let s = utils::tag("}", s)?;
