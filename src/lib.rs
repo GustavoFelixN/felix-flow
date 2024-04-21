@@ -1,12 +1,20 @@
 mod binding_def;
+mod env;
 mod expr;
 mod stmt;
+mod utils;
 mod val;
 
-mod env;
-mod utils;
+pub use env::Env;
+pub use val::Val;
 
 struct Parse(stmt::Stmt);
+
+impl Parse {
+    pub fn eval(&self, env: &mut Env) -> Result<Val, String> {
+        self.0.eval(env)
+    }
+}
 
 fn parse(s: &str) -> Result<Parse, String> {
     let (s, stmt) = stmt::Stmt::new(s)?;
