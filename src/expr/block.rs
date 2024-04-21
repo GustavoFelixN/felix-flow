@@ -35,23 +35,10 @@ impl Block {
 
         let stmts_except_last = &self.stmts[..self.stmts.len() - 1];
         for stmt in stmts_except_last {
-            match stmt {
-                Stmt::BindingDef(binding_def) => binding_def.eval(&mut env)?,
-                Stmt::Expr(expr) => {
-                    expr.eval(&env)?;
-                }
-            }
+            stmt.eval(&mut env)?;
         }
 
-        let last = self.stmts.last().unwrap();
-
-        match last {
-            Stmt::BindingDef(binding_def) => {
-                binding_def.eval(&mut env)?;
-                Ok(Val::Unit)
-            }
-            Stmt::Expr(expr) => expr.eval(&env),
-        }
+        self.stmts.last().unwrap().eval(&mut env)
     }
 }
 
@@ -61,6 +48,7 @@ mod tests {
     use super::*;
     use crate::binding_def::BindingDef;
     use crate::expr::binding_usage::BindingUsage;
+    use crate::expr::Op;
 
     #[test]
     fn parse_empty_block() {
@@ -154,5 +142,48 @@ mod tests {
             .eval(&Env::default()),
             Ok(Val::Number(1))
         )
+    }
+
+    #[test]
+    fn eval_block_with_multiple_binding_defs() {
+        assert_eq!(
+            Block {
+                stmts: vec![
+                    Stmt::BindingDef(BindingDef {
+                        name: "foo".to_string(),
+                        val: Expr::Number(Number(5)),
+                    }),
+                    Stmt::BindingDef(BindingDef {
+                        name: "bar".to_string(),
+                        val: Expr::Number(Number(4)),
+                    }),
+                    Stmt::BindingDef(BindingDef {
+                        name: "baz".to_string(),
+                        val: Expr::Number(Number(3)),
+                    }),
+                ],
+            }
+            .eval(&Env::default()),
+            Ok(Val::Unit),
+        );
+    }
+
+    #[test]
+    fn eval_block_with_multiple_exprs() {
+        assert_eq!(
+            Block {
+                stmts: vec![
+                    Stmt::Expr(Expr::Number(Number(100))),
+                    Stmt::Expr(Expr::Number(Number(30))),
+                    Stmt::Expr(Expr::Operation {
+                        lhs: Number(10),
+                        rhs: Number(7),
+                        op: Op::Sub,
+                    }),
+                ],
+            }
+            .eval(&Env::default()),
+            Ok(Val::Number(3)),
+        );
     }
 }
