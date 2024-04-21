@@ -1,3 +1,5 @@
+const WHITESPACE: &[char] = &[' ', '\n'];
+
 pub(crate) fn take_while(accept: impl Fn(char) -> bool, s: &str) -> (&str, &str) {
     let extracted_end = s
         .char_indices()
@@ -37,11 +39,15 @@ pub(crate) fn extract_op(s: &str) -> (&str, &str) {
 }
 
 pub(crate) fn extract_whitespace(s: &str) -> (&str, &str) {
-    take_while(|c| c == ' ', s)
+    take_while(|c| WHITESPACE.contains(&c), s)
 }
 
 pub(crate) fn extract_whitespace1(s: &str) -> Result<(&str, &str), String> {
-    take_while1(|c| c == ' ', s, "expected a space".to_string())
+    take_while1(
+        |c| WHITESPACE.contains(&c),
+        s,
+        "expected a space".to_string(),
+    )
 }
 
 pub(crate) fn extract_ident(s: &str) -> Result<(&str, &str), String> {
@@ -144,5 +150,10 @@ mod tests {
             extract_whitespace1("gagau"),
             Err("expected a space".to_string())
         )
+    }
+
+    #[test]
+    fn extract_newlines_or_spaces() {
+        assert_eq!(extract_whitespace("\n   \n\nabc"), ("abc", "\n   \n\n"))
     }
 }
