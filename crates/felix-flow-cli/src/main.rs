@@ -1,10 +1,17 @@
-use std::io;
+use std::io::{self, Write};
 
 fn main() -> io::Result<()> {
-    loop {
-        let mut input = String::new();
-        io::stdin().read_line(&mut input)?;
+    let stdin = io::stdin();
+    let mut stdout = io::stdout();
+    let mut input = String::new();
 
-        dbg!(input);
+    loop {
+        write!(stdout, ">>> ")?;
+        stdout.flush()?;
+
+        stdin.read_line(&mut input)?;
+        dbg!(&input);
+
+        input.clear();
     }
 }
