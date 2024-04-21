@@ -1,6 +1,6 @@
 const WHITESPACE: &[char] = &[' ', '\n'];
 
-pub(crate) fn take_while(accept: impl Fn(char) -> bool, s: &str) -> (&str, &str) {
+fn take_while(accept: impl Fn(char) -> bool, s: &str) -> (&str, &str) {
     let extracted_end = s
         .char_indices()
         .find_map(|(id, c)| if accept(c) { None } else { Some(id) })
@@ -11,7 +11,7 @@ pub(crate) fn take_while(accept: impl Fn(char) -> bool, s: &str) -> (&str, &str)
     (remainder, extracted)
 }
 
-pub(crate) fn take_while1(
+fn take_while1(
     accept: impl Fn(char) -> bool,
     s: &str,
     error_message: String,
@@ -29,7 +29,7 @@ pub(crate) fn extract_digits(s: &str) -> Result<(&str, &str), String> {
     take_while1(|c| c.is_ascii_digit(), s, "expected digits".to_string())
 }
 
-pub(crate) fn extract_op(s: &str) -> (&str, &str) {
+fn extract_op(s: &str) -> (&str, &str) {
     match &s[0..1] {
         "+" | "-" | "*" | "/" => {}
         _ => panic!("bad operator"),
