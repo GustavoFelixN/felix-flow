@@ -115,4 +115,23 @@ mod tests {
             Ok(Val::Number(25))
         )
     }
+
+    #[test]
+    fn eval_block_with_binding_def_and_usage() {
+        assert_eq!(
+            Block {
+                stmts: vec![
+                    Stmt::BindingDef(BindingDef {
+                        name: "one".to_string(),
+                        val: Expr::Number(Number(1))
+                    }),
+                    Stmt::Expr(Expr::BindingUsage(BindingUsage {
+                        name: "one".to_string()
+                    }))
+                ]
+            }
+            .eval(&Env::default()),
+            Ok(Val::Number(1))
+        )
+    }
 }
