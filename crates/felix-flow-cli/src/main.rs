@@ -7,7 +7,9 @@ fn run(input: &str, env: &mut felix_flow::Env) -> Result<(), String> {
         .eval(env)
         .map_err(|msg| format!("Evaluation error: {}", msg))?;
 
-    dbg!(evaluated);
+    if evaluated != felix_flow::Val::Unit {
+        dbg!(evaluated);
+    }
 
     Ok(())
 }
