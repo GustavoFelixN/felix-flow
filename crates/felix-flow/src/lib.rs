@@ -8,7 +8,8 @@ mod val;
 pub use env::Env;
 pub use val::Val;
 
-struct Parse(stmt::Stmt);
+#[derive(Debug)]
+pub struct Parse(stmt::Stmt);
 
 impl Parse {
     pub fn eval(&self, env: &mut Env) -> Result<Val, String> {
@@ -16,7 +17,7 @@ impl Parse {
     }
 }
 
-fn parse(s: &str) -> Result<Parse, String> {
+pub fn parse(s: &str) -> Result<Parse, String> {
     let (s, stmt) = stmt::Stmt::new(s)?;
 
     if s.is_empty() {
