@@ -101,4 +101,15 @@ mod tests {
             Ok(Val::Unit),
         );
     }
+
+    #[test]
+    fn eval_block_with_one_expr() {
+        assert_eq!(
+            Block {
+                stmts: vec![Stmt::Expr(Expr::Number(Number(25)))]
+            }
+            .eval(&Env::default()),
+            Ok(Val::Number(25))
+        )
+    }
 }
