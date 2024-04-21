@@ -5,3 +5,10 @@ version = 3
 [[package]]
 name = "felix-flow"
 version = "0.1.0"
+
+[[package]]
+name = "felix-flow-cli"
+version = "0.1.0"
+dependencies = [
+ "felix-flow",
+]
