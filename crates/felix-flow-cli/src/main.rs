@@ -6,6 +6,7 @@ fn main() -> io::Result<()> {
     let mut stderr = io::stderr();
 
     let mut input = String::new();
+    let mut env = felix_flow::Env::default();
 
     loop {
         write!(stdout, ">>> ")?;
@@ -14,11 +15,18 @@ fn main() -> io::Result<()> {
         stdin.read_line(&mut input)?;
 
         match felix_flow::parse(&input.trim()) {
-            Ok(parse) => {
-                dbg!(parse);
-            }
+            Ok(parse) => match parse.eval(&mut env) {
+                Ok(val) => {
+                    dbg!(val);
+                }
+                Err(msg) => {
+                    writeln!(stderr, "Evaluation error: {}", msg)?;
+                    stderr.flush()?;
+                }
+            },
             Err(msg) => {
                 writeln!(stderr, "Parse error: {}", msg)?;
+                stderr.flush()?;
             }
         }
 
