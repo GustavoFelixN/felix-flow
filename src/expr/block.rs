@@ -27,7 +27,10 @@ impl Block {
     }
 
     pub(crate) fn eval(&self, env: &Env) -> Result<Val, String> {
-        Ok(Val::Unit)
+        self.stmts.last().map_or(Ok(Val::Unit), |stmt| match stmt {
+            Stmt::BindingDef(_) => todo!(),
+            Stmt::Expr(expr) => expr.eval(env),
+        })
     }
 }
 
