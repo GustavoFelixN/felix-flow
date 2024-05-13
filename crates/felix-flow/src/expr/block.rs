@@ -2,7 +2,7 @@ use crate::{env::Env, stmt::Stmt, utils, val::Val};
 
 #[derive(Debug, PartialEq)]
 pub(crate) struct Block {
-    pub(super) stmts: Vec<Stmt>,
+    pub(crate) stmts: Vec<Stmt>,
 }
 
 impl Block {

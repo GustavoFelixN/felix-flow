@@ -1,9 +1,10 @@
 mod binding_usage;
 mod block;
 
+pub(crate) use binding_usage::BindingUsage;
+pub(crate) use block::Block;
+
 use crate::{env::Env, utils, val::Val};
-use binding_usage::BindingUsage;
-use block::Block;
 
 #[derive(Debug, PartialEq)]
 pub(crate) struct Number(pub(crate) i32);
@@ -52,6 +53,7 @@ impl Expr {
     }
 
     fn new_operation(s: &str) -> Result<(&str, Self), String> {
+        //NOTE: Number definition here dont allow operations with bindigs
         let (s, lhs) = Number::new(s)?;
         let (s, _) = utils::extract_whitespace(s);
 
