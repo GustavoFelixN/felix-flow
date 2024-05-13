@@ -15,6 +15,11 @@ impl FuncDef {
         let (s, name) = utils::extract_ident(s)?;
         let (s, _) = utils::extract_whitespace(s);
 
+        let (s, params) = utils::sequence(
+            |s| utils::extract_ident(s).map(|(s, ident)| (s, ident.to_string())),
+            s,
+        )?;
+
         let s = utils::tag("=>", s)?;
         let (s, _) = utils::extract_whitespace(s);
 
@@ -24,11 +29,10 @@ impl FuncDef {
             s,
             Self {
                 name: name.to_string(),
-                params: Vec::new(),
+                params,
                 body: Box::new(body),
-            }
+            },
         ))
-
     }
 }
 

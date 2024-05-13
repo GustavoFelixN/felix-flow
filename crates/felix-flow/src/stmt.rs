@@ -15,6 +15,7 @@ impl Stmt {
     pub(crate) fn new(s: &str) -> Result<(&str, Self), String> {
         BindingDef::new(s)
             .map(|(s, binding_def)| (s, Self::BindingDef(binding_def)))
+            .or_else(|_| FuncDef::new(s).map(|(s, func_def)| (s, Self::FuncDef(func_def))))
             .or_else(|_| Expr::new(s).map(|(s, expr)| (s, Self::Expr(expr))))
     }
 
@@ -90,7 +91,7 @@ mod tests {
             Ok((
                 "",
                 Stmt::FuncDef(FuncDef {
-                    name: "idendity".to_string(),
+                    name: "identity".to_string(),
                     params: vec!["x".to_string()],
                     body: Box::new(Stmt::Expr(Expr::BindingUsage(BindingUsage {
                         name: "x".to_string()
