@@ -1,6 +1,6 @@
 use crate::{env::Env, expr::Expr, utils};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub(crate) struct BindingDef {
     pub(crate) name: String,
     pub(crate) val: Expr,
