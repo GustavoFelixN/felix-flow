@@ -36,6 +36,7 @@ impl FuncDef {
     }
 
     pub(crate) fn eval(&self, env: &mut Env) -> Result<(), String> {
+        env.store_func(self.name.clone(), self.params.clone(), *self.body.clone());
         Ok(())
     }
 }
