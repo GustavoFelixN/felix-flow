@@ -1,11 +1,13 @@
 use crate::binding_def::BindingDef;
 use crate::env::Env;
 use crate::expr::Expr;
+use crate::func_def::FuncDef;
 use crate::val::Val;
 
 #[derive(Debug, PartialEq)]
 pub(crate) enum Stmt {
     BindingDef(BindingDef),
+    FuncDef(FuncDef),
     Expr(Expr),
 }
 
@@ -22,15 +24,15 @@ impl Stmt {
                 binding_def.eval(env)?;
                 Ok(Val::Unit)
             }
+            Self::FuncDef(_) => todo!(),
             Self::Expr(expr) => expr.eval(env),
         }
     }
 }
 #[cfg(test)]
 mod tests {
-    use crate::expr::{Number, Op};
-
     use super::*;
+    use crate::expr::{BindingUsage, Number, Op};
 
     #[test]
     fn parse_binding_def() {
@@ -79,5 +81,22 @@ mod tests {
             Stmt::Expr(Expr::Number(Number(4))).eval(&mut Env::default()),
             Ok(Val::Number(4))
         )
+    }
+
+    #[test]
+    fn parse_func_def() {
+        assert_eq!(
+            Stmt::new("fn identity x => x"),
+            Ok((
+                "",
+                Stmt::FuncDef(FuncDef {
+                    name: "idendity".to_string(),
+                    params: vec!["x".to_string()],
+                    body: Box::new(Stmt::Expr(Expr::BindingUsage(BindingUsage {
+                        name: "x".to_string()
+                    }))),
+                }),
+            )),
+        );
     }
 }
