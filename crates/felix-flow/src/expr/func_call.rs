@@ -28,6 +28,16 @@ impl FuncCall {
 
         let (param_names, body) = env.get_func(&self.callee)?;
 
+        let num_expected_params = param_names.len();
+        let num_actual_params = self.params.len();
+
+        if num_expected_params != num_actual_params {
+            return Err(format!(
+                "expected {} parameters, got {}",
+                num_expected_params, num_actual_params
+            ));
+        }
+
         for (param_name, param_expr) in param_names.into_iter().zip(&self.params) {
             let param_val = param_expr.eval(&child_env)?;
             child_env.store_binding(param_name, param_val);
@@ -41,7 +51,7 @@ impl FuncCall {
 mod tests {
     use crate::stmt::Stmt;
 
-    use super::super::{BindingUsage, Number};
+    use super::super::{BindingUsage, Number, Op};
     use super::*;
 
     #[test]
@@ -90,6 +100,66 @@ mod tests {
             }
             .eval(&env),
             Err("function with name 'i_dont_exist' does not exist".to_string())
+        )
+    }
+
+    #[test]
+    fn eval_func_call_with_too_few_params() {
+        let mut env = Env::default();
+
+        env.store_func(
+            "mul".to_string(),
+            vec!["a".to_string(), "b".to_string()],
+            Stmt::Expr(Expr::Operation {
+                lhs: Box::new(Expr::BindingUsage(BindingUsage {
+                    name: "a".to_string(),
+                })),
+                rhs: Box::new(Expr::BindingUsage(BindingUsage {
+                    name: "b".to_string(),
+                })),
+                op: Op::Mul,
+            }),
+        );
+
+        assert_eq!(
+            FuncCall {
+                callee: "mul".to_string(),
+                params: vec![Expr::Number(Number(100))]
+            }
+            .eval(&env),
+            Err("expected 2 parameters, got 1".to_string()),
+        )
+    }
+
+    #[test]
+    fn eval_func_with_too_many_params() {
+        let mut env = Env::default();
+
+        env.store_func(
+            "mul".to_string(),
+            vec!["a".to_string(), "b".to_string()],
+            Stmt::Expr(Expr::Operation {
+                lhs: Box::new(Expr::BindingUsage(BindingUsage {
+                    name: "a".to_string(),
+                })),
+                rhs: Box::new(Expr::BindingUsage(BindingUsage {
+                    name: "b".to_string(),
+                })),
+                op: Op::Mul,
+            }),
+        );
+
+        assert_eq!(
+            FuncCall {
+                callee: "mul".to_string(),
+                params: vec![
+                    Expr::Number(Number(100)),
+                    Expr::Number(Number(100)),
+                    Expr::Number(Number(100))
+                ]
+            }
+            .eval(&env),
+            Err("expected 2 parameters, got 3".to_string()),
         )
     }
 }
