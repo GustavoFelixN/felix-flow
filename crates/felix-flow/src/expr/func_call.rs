@@ -12,7 +12,7 @@ impl FuncCall {
         let (s, callee) = utils::extract_ident(s)?;
         let (s, _) = utils::extract_whitespace1(s)?;
 
-        let (s, params) = utils::sequence(Expr::new, s)?;
+        let (s, params) = utils::sequence1(Expr::new, s)?;
 
         Ok((
             s,
