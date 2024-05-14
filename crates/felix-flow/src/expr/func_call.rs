@@ -26,7 +26,7 @@ impl FuncCall {
     pub(crate) fn eval(&self, env: &Env) -> Result<Val, String> {
         let mut child_env = env.create_child();
 
-        let (param_names, body) = env.get_func(&self.callee).unwrap();
+        let (param_names, body) = env.get_func(&self.callee)?;
 
         for (param_name, param_expr) in param_names.into_iter().zip(&self.params) {
             let param_val = param_expr.eval(&child_env)?;
@@ -39,7 +39,9 @@ impl FuncCall {
 
 #[cfg(test)]
 mod tests {
-    use super::super::Number;
+    use crate::stmt::Stmt;
+
+    use super::super::{BindingUsage, Number};
     use super::*;
 
     #[test]
@@ -53,6 +55,41 @@ mod tests {
                     params: vec![Expr::Number(Number(10))],
                 },
             ))
+        )
+    }
+
+    #[test]
+    fn eval_func_call() {
+        let mut env = Env::default();
+
+        env.store_func(
+            "id".to_string(),
+            vec!["x".to_string()],
+            Stmt::Expr(Expr::BindingUsage(BindingUsage {
+                name: "x".to_string(),
+            })),
+        );
+
+        assert_eq!(
+            FuncCall {
+                callee: "id".to_string(),
+                params: vec![Expr::Number(Number(10))],
+            }
+            .eval(&env),
+            Ok(Val::Number(10)),
+        )
+    }
+
+    #[test]
+    fn eval_non_existing_func_call() {
+        let env = Env::default();
+        assert_eq!(
+            FuncCall {
+                callee: "i_dont_exist".to_string(),
+                params: vec![Expr::Number(Number(1))],
+            }
+            .eval(&env),
+            Err("function with name 'i_dont_exist' does not exist".to_string())
         )
     }
 }
