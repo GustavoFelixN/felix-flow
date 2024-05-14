@@ -1,5 +1,5 @@
 use crate::expr::Expr;
-use crate::utils;
+use crate::{utils, Env, Val};
 
 #[derive(Debug, Clone, PartialEq)]
 pub(crate) struct FuncCall {
@@ -21,6 +21,19 @@ impl FuncCall {
                 params,
             },
         ))
+    }
+
+    pub(crate) fn eval(&self, env: &Env) -> Result<Val, String> {
+        let mut child_env = env.create_child();
+
+        let (param_names, body) = env.get_func(&self.callee).unwrap();
+
+        for (param_name, param_expr) in param_names.into_iter().zip(&self.params) {
+            let param_val = param_expr.eval(&child_env)?;
+            child_env.store_binding(param_name, param_val);
+        }
+
+        body.eval(&mut child_env)
     }
 }
 
