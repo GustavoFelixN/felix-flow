@@ -37,6 +37,14 @@ pub(super) enum SyntaxKind {
 
     #[token("}")]
     RBrace,
+
+    Root,
+}
+
+impl From<SyntaxKind> for rowan::SyntaxKind {
+    fn from(value: SyntaxKind) -> Self {
+        Self(value as u16)
+    }
 }
 
 #[cfg(test)]
