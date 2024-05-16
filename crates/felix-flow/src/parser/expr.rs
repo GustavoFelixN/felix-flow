@@ -95,4 +95,42 @@ mod tests {
             ],
         )
     }
+
+    #[test]
+    fn parse_left_associative_binary_expression() {
+        check(
+            "1+2+3+4",
+            expect![[r#"
+            Root@0..7
+              BinOp@0..7
+                BinOp@0..5
+                  BinOp@0..3
+                    Number@0..1 "1"
+                    Plus@1..2 "+"
+                    Number@2..3 "2"
+                  Plus@3..4 "+"
+                  Number@4..5 "3"
+                Plus@5..6 "+"
+                Number@6..7 "4""#]],
+        );
+    }
+
+    #[test]
+    fn parse_binary_expression_with_mixed_binding_power() {
+        check(
+            "1+2*3-4",
+            expect![[r#"
+            Root@0..7
+              BinOp@0..7
+                BinOp@0..5
+                  Number@0..1 "1"
+                  Plus@1..2 "+"
+                  BinOp@2..5
+                    Number@2..3 "2"
+                    Star@3..4 "*"
+                    Number@4..5 "3"
+                Minus@5..6 "-"
+                Number@6..7 "4""#]],
+        );
+    }
 }
