@@ -2,23 +2,33 @@ use super::Parser;
 use crate::lexer::SyntaxKind;
 
 pub(super) fn expr(p: &mut Parser) {
-    expr_binding_powe(p, 0);
+    expr_binding_power(p, 0);
 }
 
-fn expr_binding_powe(p: &mut Parser, minimum_binding_power: u8) {
+fn expr_binding_power(p: &mut Parser, minimum_binding_power: u8) {
     let checkpoint = p.checkpoint();
 
     match p.peek() {
         Some(Ok(SyntaxKind::Number)) | Some(Ok(SyntaxKind::Ident)) => p.bump(),
+        Some(Ok(SyntaxKind::Minus)) => {
+            let op = PrefixOp::Neg;
+            let ((), right_binding_power) = op.binding_power();
+
+            p.bump();
+
+            p.start_node_at(checkpoint, SyntaxKind::PrefixExpr);
+            expr_binding_power(p, right_binding_power);
+            p.finish_node();
+        }
         _ => {}
     }
 
     loop {
         let op = match p.peek() {
-            Some(Ok(SyntaxKind::Plus)) => Op::Add,
-            Some(Ok(SyntaxKind::Minus)) => Op::Sub,
-            Some(Ok(SyntaxKind::Star)) => Op::Mul,
-            Some(Ok(SyntaxKind::Slash)) => Op::Div,
+            Some(Ok(SyntaxKind::Plus)) => InfixOp::Add,
+            Some(Ok(SyntaxKind::Minus)) => InfixOp::Sub,
+            Some(Ok(SyntaxKind::Star)) => InfixOp::Mul,
+            Some(Ok(SyntaxKind::Slash)) => InfixOp::Div,
             _ => return,
         };
 
@@ -30,24 +40,36 @@ fn expr_binding_powe(p: &mut Parser, minimum_binding_power: u8) {
 
         p.bump();
 
-        p.start_node_at(checkpoint, SyntaxKind::BinOp);
-        expr_binding_powe(p, right_binding_power);
+        p.start_node_at(checkpoint, SyntaxKind::BinExpr);
+        expr_binding_power(p, right_binding_power);
         p.finish_node();
     }
 }
 
-enum Op {
+enum InfixOp {
     Add,
     Sub,
     Mul,
     Div,
 }
 
-impl Op {
+impl InfixOp {
     fn binding_power(&self) -> (u8, u8) {
         match self {
             Self::Add | Self::Sub => (1, 2),
             Self::Mul | Self::Div => (3, 4),
+        }
+    }
+}
+
+enum PrefixOp {
+    Neg,
+}
+
+impl PrefixOp {
+    fn binding_power(&self) -> ((), u8) {
+        match self {
+            Self::Neg => ((), 5),
         }
     }
 }
@@ -88,7 +110,7 @@ mod tests {
             expect![
                 r#"
         Root@0..3
-          BinOp@0..3
+          BinExpr@0..3
             Number@0..1 "1"
             Plus@1..2 "+"
             Number@2..3 "2""#
@@ -102,9 +124,9 @@ mod tests {
             "1+2+3+4",
             expect![[r#"
             Root@0..7
-              BinOp@0..7
-                BinOp@0..5
-                  BinOp@0..3
+              BinExpr@0..7
+                BinExpr@0..5
+                  BinExpr@0..3
                     Number@0..1 "1"
                     Plus@1..2 "+"
                     Number@2..3 "2"
@@ -121,16 +143,27 @@ mod tests {
             "1+2*3-4",
             expect![[r#"
             Root@0..7
-              BinOp@0..7
-                BinOp@0..5
+              BinExpr@0..7
+                BinExpr@0..5
                   Number@0..1 "1"
                   Plus@1..2 "+"
-                  BinOp@2..5
+                  BinExpr@2..5
                     Number@2..3 "2"
                     Star@3..4 "*"
                     Number@4..5 "3"
                 Minus@5..6 "-"
                 Number@6..7 "4""#]],
+        );
+    }
+    #[test]
+    fn parse_negation() {
+        check(
+            "-10",
+            expect![[r#"
+            Root@0..3
+              PrefixExpr@0..3
+                Minus@0..1 "-"
+                Number@1..3 "10""#]],
         );
     }
 }

@@ -41,8 +41,8 @@ pub(super) enum SyntaxKind {
     RBrace,
 
     Root,
-
-    BinOp,
+    BinExpr,
+    PrefixExpr,
 }
 
 pub(crate) struct Lexer<'a> {
