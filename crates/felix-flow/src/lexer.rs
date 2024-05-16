@@ -1,6 +1,8 @@
 use logos::Logos;
 
-#[derive(Logos, Debug, PartialEq, Clone, Copy)]
+#[derive(
+    Logos, Debug, PartialEq, Eq, Clone, Copy, FromPrimitive, ToPrimitive, PartialOrd, Ord, Hash,
+)]
 pub(super) enum SyntaxKind {
     #[regex(" +")]
     WhiteSpace,
