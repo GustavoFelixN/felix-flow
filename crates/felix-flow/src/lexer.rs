@@ -41,7 +41,7 @@ pub(super) enum SyntaxKind {
     RBrace,
 
     Root,
-    BinExpr,
+    BinaryExpr,
     PrefixExpr,
 }
 

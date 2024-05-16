@@ -40,7 +40,7 @@ fn expr_binding_power(p: &mut Parser, minimum_binding_power: u8) {
 
         p.bump();
 
-        p.start_node_at(checkpoint, SyntaxKind::BinExpr);
+        p.start_node_at(checkpoint, SyntaxKind::BinaryExpr);
         expr_binding_power(p, right_binding_power);
         p.finish_node();
     }
@@ -110,7 +110,7 @@ mod tests {
             expect![
                 r#"
         Root@0..3
-          BinExpr@0..3
+          BinaryExpr@0..3
             Number@0..1 "1"
             Plus@1..2 "+"
             Number@2..3 "2""#
@@ -124,9 +124,9 @@ mod tests {
             "1+2+3+4",
             expect![[r#"
             Root@0..7
-              BinExpr@0..7
-                BinExpr@0..5
-                  BinExpr@0..3
+              BinaryExpr@0..7
+                BinaryExpr@0..5
+                  BinaryExpr@0..3
                     Number@0..1 "1"
                     Plus@1..2 "+"
                     Number@2..3 "2"
@@ -143,11 +143,11 @@ mod tests {
             "1+2*3-4",
             expect![[r#"
             Root@0..7
-              BinExpr@0..7
-                BinExpr@0..5
+              BinaryExpr@0..7
+                BinaryExpr@0..5
                   Number@0..1 "1"
                   Plus@1..2 "+"
-                  BinExpr@2..5
+                  BinaryExpr@2..5
                     Number@2..3 "2"
                     Star@3..4 "*"
                     Number@4..5 "3"
@@ -164,6 +164,20 @@ mod tests {
               PrefixExpr@0..3
                 Minus@0..1 "-"
                 Number@1..3 "10""#]],
+        );
+    }
+    #[test]
+    fn negation_has_higher_binding_power_than_infix_operators() {
+        check(
+            "-20+20",
+            expect![[r#"
+            Root@0..6
+              BinaryExpr@0..6
+                PrefixExpr@0..3
+                  Minus@0..1 "-"
+                  Number@1..3 "20"
+                Plus@3..4 "+"
+                Number@4..6 "20""#]],
         );
     }
 }
