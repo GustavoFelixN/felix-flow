@@ -43,9 +43,25 @@ pub(super) enum SyntaxKind {
     Root,
 }
 
-impl From<SyntaxKind> for rowan::SyntaxKind {
-    fn from(value: SyntaxKind) -> Self {
-        Self(value as u16)
+pub(crate) struct Lexer<'a> {
+    inner: logos::Lexer<'a, SyntaxKind>,
+}
+
+impl<'a> Lexer<'a> {
+    pub(crate) fn new(input: &'a str) -> Self {
+        Self {
+            inner: SyntaxKind::lexer(input),
+        }
+    }
+}
+
+impl<'a> Iterator for Lexer<'a> {
+    type Item = (Result<SyntaxKind, ()>, &'a str);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let kind = self.inner.next()?;
+        let text = self.inner.slice();
+        Some((kind, text))
     }
 }
 
@@ -54,10 +70,8 @@ mod tests {
     use super::*;
 
     fn check(input: &str, kind: SyntaxKind) {
-        let mut lexer = SyntaxKind::lexer(input);
-
-        assert_eq!(lexer.next(), Some(Ok(kind)));
-        assert_eq!(lexer.slice(), input);
+        let mut lexer = Lexer::new(input);
+        assert_eq!(lexer.next(), Some((Ok(kind), input)));
     }
 
     #[test]

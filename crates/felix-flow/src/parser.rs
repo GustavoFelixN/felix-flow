@@ -1,23 +1,28 @@
-use crate::lexer::SyntaxKind;
+use crate::lexer::{Lexer, SyntaxKind};
 use crate::syntax::{FelixFlowLanguage, SyntaxNode};
-use logos::Logos;
 use rowan::{GreenNode, GreenNodeBuilder, Language};
+use std::iter::Peekable;
 
 pub struct Parser<'a> {
-    lexer: logos::Lexer<'a, SyntaxKind>,
+    lexer: Peekable<Lexer<'a>>,
     builder: GreenNodeBuilder<'static>,
 }
 
 impl<'a> Parser<'a> {
     pub fn new(input: &'a str) -> Self {
         Self {
-            lexer: SyntaxKind::lexer(input),
+            lexer: Lexer::new(input).peekable(),
             builder: GreenNodeBuilder::new(),
         }
     }
 
     pub fn parse(mut self) -> Parse {
         self.start_node(SyntaxKind::Root);
+
+        if self.peek() == Some(Ok(SyntaxKind::Number)) {
+            self.bump();
+        }
+
         self.finish_node();
 
         Parse {
@@ -32,6 +37,21 @@ impl<'a> Parser<'a> {
 
     fn finish_node(&mut self) {
         self.builder.finish_node();
+    }
+
+    fn peek(&mut self) -> Option<Result<SyntaxKind, ()>> {
+        self.lexer.peek().map(|(kind, _)| *kind)
+    }
+
+    fn bump(&mut self) {
+        let (kind, text) = self
+            .lexer
+            .next()
+            .expect("Check made early. Its suppose to exist.");
+        self.builder.token(
+            FelixFlowLanguage::kind_to_raw(kind.expect("Check made early. Its suppose to exist.")),
+            text.into(),
+        )
     }
 }
 
@@ -60,5 +80,17 @@ mod tests {
     #[test]
     fn parse_nothing() {
         check("", expect![r#"Root@0..0"#])
+    }
+
+    #[test]
+    fn parse_number() {
+        check(
+            "123",
+            expect![
+                r#"
+                Root@0..3
+                  Number@0..3 "123""#
+            ],
+        )
     }
 }
