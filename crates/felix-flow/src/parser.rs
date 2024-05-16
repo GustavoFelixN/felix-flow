@@ -1,6 +1,9 @@
+mod expr;
+
 use crate::lexer::{Lexer, SyntaxKind};
 use crate::syntax::{FelixFlowLanguage, SyntaxNode};
-use rowan::{GreenNode, GreenNodeBuilder, Language};
+use expr::expr;
+use rowan::{Checkpoint, GreenNode, GreenNodeBuilder, Language};
 use std::iter::Peekable;
 
 pub struct Parser<'a> {
@@ -19,10 +22,7 @@ impl<'a> Parser<'a> {
     pub fn parse(mut self) -> Parse {
         self.start_node(SyntaxKind::Root);
 
-        match self.peek() {
-            Some(Ok(SyntaxKind::Number)) | Some(Ok(SyntaxKind::Ident)) => self.bump(),
-            _ => {}
-        }
+        expr(&mut self);
 
         self.finish_node();
 
@@ -54,6 +54,15 @@ impl<'a> Parser<'a> {
             text.into(),
         )
     }
+
+    fn start_node_at(&mut self, checkpoint: Checkpoint, kind: SyntaxKind) {
+        self.builder
+            .start_node_at(checkpoint, FelixFlowLanguage::kind_to_raw(kind))
+    }
+
+    fn checkpoint(&self) -> Checkpoint {
+        self.builder.checkpoint()
+    }
 }
 
 pub struct Parse {
@@ -69,41 +78,18 @@ impl Parse {
 }
 
 #[cfg(test)]
+fn check(input: &str, expected_tree: expect_test::Expect) {
+    let parse = Parser::new(input).parse();
+    expected_tree.assert_eq(&parse.debug_tree());
+}
+
+#[cfg(test)]
 mod tests {
     use super::*;
-    use expect_test::{expect, Expect};
-
-    fn check(input: &str, expected_tree: Expect) {
-        let parse = Parser::new(input).parse();
-        expected_tree.assert_eq(&parse.debug_tree());
-    }
+    use expect_test::expect;
 
     #[test]
     fn parse_nothing() {
         check("", expect![r#"Root@0..0"#])
-    }
-
-    #[test]
-    fn parse_number() {
-        check(
-            "123",
-            expect![
-                r#"
-                Root@0..3
-                  Number@0..3 "123""#
-            ],
-        )
-    }
-
-    #[test]
-    fn parse_binding_usage() {
-        check(
-            "abc",
-            expect![
-                r#"
-        Root@0..3
-          Ident@0..3 "abc""#
-            ],
-        )
     }
 }
