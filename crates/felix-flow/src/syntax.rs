@@ -15,3 +15,5 @@ impl rowan::Language for FelixFlowLanguage {
         rowan::SyntaxKind(kind.to_u16().unwrap())
     }
 }
+
+pub(crate) type SyntaxNode = rowan::SyntaxNode<FelixFlowLanguage>;
