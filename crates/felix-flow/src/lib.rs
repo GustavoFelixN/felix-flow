@@ -2,5 +2,5 @@
 extern crate num_derive;
 
 mod lexer;
-mod parser;
+pub mod parser;
 mod syntax;
