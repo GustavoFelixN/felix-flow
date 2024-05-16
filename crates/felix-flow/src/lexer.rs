@@ -40,6 +40,12 @@ pub(super) enum SyntaxKind {
     #[token("}")]
     RBrace,
 
+    #[token("(")]
+    LParen,
+
+    #[token(")")]
+    RParen,
+
     Root,
     BinaryExpr,
     PrefixExpr,
@@ -143,5 +149,15 @@ mod tests {
     #[test]
     fn lex_right_brace() {
         check("}", SyntaxKind::RBrace);
+    }
+
+    #[test]
+    fn lex_left_parenteses() {
+        check("(", SyntaxKind::LParen);
+    }
+
+    #[test]
+    fn lex_right_parenteses() {
+        check(")", SyntaxKind::RParen);
     }
 }
