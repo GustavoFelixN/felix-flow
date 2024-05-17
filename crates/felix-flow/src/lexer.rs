@@ -46,9 +46,18 @@ pub(super) enum SyntaxKind {
     #[token(")")]
     RParen,
 
+    #[regex("#.*")]
+    Comment,
+
     Root,
     BinaryExpr,
     PrefixExpr,
+}
+
+impl SyntaxKind {
+    pub(crate) fn is_trivia(self) -> bool {
+        matches!(self, Self::Whitespace | Self::Comment)
+    }
 }
 
 pub(crate) struct Lexer<'a> {
@@ -168,5 +177,10 @@ mod tests {
     #[test]
     fn lex_right_parenteses() {
         check(")", SyntaxKind::RParen);
+    }
+
+    #[test]
+    fn lex_comment() {
+        check("# foo", SyntaxKind::Comment);
     }
 }
