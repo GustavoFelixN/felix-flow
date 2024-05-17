@@ -43,12 +43,13 @@ impl<'l, 'input> Parser<'l, 'input> {
     }
 
     fn peek(&mut self) -> Option<SyntaxKind> {
-        self.lexemes
-            .get(self.cursor)
-            .map(|Lexeme { kind, .. }| *kind)
+        self.eat_whitespace();
+        self.peek_raw()
     }
 
     fn bump(&mut self) {
+        self.eat_whitespace();
+
         let Lexeme { kind, text } = self.lexemes[self.cursor];
 
         self.cursor += 1;
@@ -57,6 +58,18 @@ impl<'l, 'input> Parser<'l, 'input> {
             kind,
             text: text.into(),
         });
+    }
+
+    fn eat_whitespace(&mut self) {
+        while self.peek_raw() == Some(SyntaxKind::Whitespace) {
+            self.cursor += 1;
+        }
+    }
+
+    fn peek_raw(&self) -> Option<SyntaxKind> {
+        self.lexemes
+            .get(self.cursor)
+            .map(|Lexeme { kind, .. }| *kind)
     }
 
     fn start_node_at(&mut self, checkpoint: usize, kind: SyntaxKind) {
@@ -105,5 +118,17 @@ mod tests {
     #[test]
     fn parse_nothing() {
         check("", expect![r#"Root@0..0"#])
+    }
+
+    #[test]
+    fn parse_whitespace() {
+        check(
+            "   ",
+            expect![
+                r#"
+        Root@0..3
+          Whitespace@0..3 "   ""#
+            ],
+        )
     }
 }

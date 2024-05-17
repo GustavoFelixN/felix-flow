@@ -5,7 +5,7 @@ use logos::Logos;
 )]
 pub(super) enum SyntaxKind {
     #[regex(" +")]
-    WhiteSpace,
+    Whitespace,
 
     #[token("fn")]
     FnKw,
@@ -93,7 +93,7 @@ mod tests {
 
     #[test]
     fn lex_spaces() {
-        check("  ", SyntaxKind::WhiteSpace);
+        check("  ", SyntaxKind::Whitespace);
     }
 
     #[test]
