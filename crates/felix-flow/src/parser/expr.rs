@@ -98,7 +98,7 @@ mod tests {
     }
 
     #[test]
-    fn parse_binding_usage() {
+    fn parse_variable_ref() {
         check(
             "abc",
             expect![

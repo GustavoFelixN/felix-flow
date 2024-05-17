@@ -1,43 +1,45 @@
+mod event;
 mod expr;
+mod sink;
 
 use crate::lexer::{Lexer, SyntaxKind};
-use crate::syntax::{FelixFlowLanguage, SyntaxNode};
+use crate::syntax::SyntaxNode;
+use event::Event;
 use expr::expr;
-use rowan::{Checkpoint, GreenNode, GreenNodeBuilder, Language};
+use rowan::GreenNode;
+use sink::Sink;
 use std::iter::Peekable;
 
 pub struct Parser<'a> {
     lexer: Peekable<Lexer<'a>>,
-    builder: GreenNodeBuilder<'static>,
+    events: Vec<Event>,
 }
 
 impl<'a> Parser<'a> {
     pub fn new(input: &'a str) -> Self {
         Self {
             lexer: Lexer::new(input).peekable(),
-            builder: GreenNodeBuilder::new(),
+            events: Vec::new(),
         }
     }
 
     pub fn parse(mut self) -> Parse {
         self.start_node(SyntaxKind::Root);
-
         expr(&mut self);
-
         self.finish_node();
 
+        let sink = Sink::new(self.events);
         Parse {
-            green_node: self.builder.finish(),
+            green_node: sink.finish(),
         }
     }
 
     fn start_node(&mut self, kind: SyntaxKind) {
-        self.builder
-            .start_node(FelixFlowLanguage::kind_to_raw(kind));
+        self.events.push(Event::StartNode { kind });
     }
 
     fn finish_node(&mut self) {
-        self.builder.finish_node();
+        self.events.push(Event::FinishNode);
     }
 
     fn peek(&mut self) -> Option<Result<SyntaxKind, ()>> {
@@ -49,19 +51,18 @@ impl<'a> Parser<'a> {
             .lexer
             .next()
             .expect("Check made early. Its suppose to exist.");
-        self.builder.token(
-            FelixFlowLanguage::kind_to_raw(kind.expect("Check made early. Its suppose to exist.")),
-            text.into(),
-        )
+        self.events.push(Event::AddToken {
+            kind: kind.expect("Check made early. Its suppose to exist."),
+            text: text.into(),
+        });
     }
 
-    fn start_node_at(&mut self, checkpoint: Checkpoint, kind: SyntaxKind) {
-        self.builder
-            .start_node_at(checkpoint, FelixFlowLanguage::kind_to_raw(kind))
+    fn start_node_at(&mut self, checkpoint: usize, kind: SyntaxKind) {
+        self.events.push(Event::StartNodeAt { kind, checkpoint })
     }
 
-    fn checkpoint(&self) -> Checkpoint {
-        self.builder.checkpoint()
+    fn checkpoint(&self) -> usize {
+        self.events.len()
     }
 }
 
