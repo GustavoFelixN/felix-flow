@@ -4,7 +4,7 @@ use logos::Logos;
     Logos, Debug, PartialEq, Eq, Clone, Copy, FromPrimitive, ToPrimitive, PartialOrd, Ord, Hash,
 )]
 pub(super) enum SyntaxKind {
-    #[regex(" +")]
+    #[regex("[ \n]+")]
     Whitespace,
 
     #[token("fn")]
@@ -103,6 +103,11 @@ mod tests {
     #[test]
     fn lex_spaces() {
         check("  ", SyntaxKind::Whitespace);
+    }
+
+    #[test]
+    fn lex_space_and_newlines() {
+        check("  \n", SyntaxKind::Whitespace);
     }
 
     #[test]
