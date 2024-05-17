@@ -3,7 +3,7 @@ mod expr;
 mod sink;
 
 use crate::{
-    lexer::{Lexer, SyntaxKind},
+    lexer::{Lexeme, Lexer, SyntaxKind},
     syntax::SyntaxNode,
 };
 use event::Event;
@@ -12,13 +12,13 @@ use rowan::GreenNode;
 use sink::Sink;
 
 struct Parser<'l, 'input> {
-    lexemes: &'l [(SyntaxKind, &'input str)],
+    lexemes: &'l [Lexeme<'input>],
     cursor: usize,
     events: Vec<Event>,
 }
 
 impl<'l, 'input> Parser<'l, 'input> {
-    pub fn new(lexemes: &'l [(SyntaxKind, &'input str)]) -> Self {
+    pub fn new(lexemes: &'l [Lexeme<'input>]) -> Self {
         Self {
             lexemes,
             cursor: 0,
@@ -43,11 +43,13 @@ impl<'l, 'input> Parser<'l, 'input> {
     }
 
     fn peek(&mut self) -> Option<SyntaxKind> {
-        self.lexemes.get(self.cursor).map(|(kind, _)| *kind)
+        self.lexemes
+            .get(self.cursor)
+            .map(|Lexeme { kind, .. }| *kind)
     }
 
     fn bump(&mut self) {
-        let (kind, text) = self.lexemes[self.cursor];
+        let Lexeme { kind, text } = self.lexemes[self.cursor];
 
         self.cursor += 1;
 
@@ -67,9 +69,7 @@ impl<'l, 'input> Parser<'l, 'input> {
 }
 
 pub fn parse(input: &str) -> Parse {
-    let lexemes: Vec<_> = Lexer::new(input)
-        .map(|(kind, text)| (kind.unwrap(), text))
-        .collect();
+    let lexemes: Vec<_> = Lexer::new(input).collect();
     let parser = Parser::new(&lexemes);
     let events = parser.parse();
     let sink = Sink::new(&lexemes, events);
