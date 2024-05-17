@@ -1,4 +1,4 @@
-use felix_flow::parser::Parser;
+use felix_flow::parser::parse;
 use std::io::{self, Write};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -13,7 +13,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         stdin.read_line(&mut input)?;
 
-        let parse = Parser::new(&input).parse();
+        let parse = parse(&input);
         println!("{}", parse.debug_tree());
 
         input.clear()
