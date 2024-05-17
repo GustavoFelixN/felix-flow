@@ -9,8 +9,8 @@ fn expr_binding_power(p: &mut Parser, minimum_binding_power: u8) {
     let checkpoint = p.checkpoint();
 
     match p.peek() {
-        Some(Ok(SyntaxKind::Number)) | Some(Ok(SyntaxKind::Ident)) => p.bump(),
-        Some(Ok(SyntaxKind::Minus)) => {
+        Some(SyntaxKind::Number) | Some(SyntaxKind::Ident) => p.bump(),
+        Some(SyntaxKind::Minus) => {
             let op = PrefixOp::Neg;
             let ((), right_binding_power) = op.binding_power();
 
@@ -20,10 +20,10 @@ fn expr_binding_power(p: &mut Parser, minimum_binding_power: u8) {
             expr_binding_power(p, right_binding_power);
             p.finish_node();
         }
-        Some(Ok(SyntaxKind::LParen)) => {
+        Some(SyntaxKind::LParen) => {
             p.bump();
             expr_binding_power(p, 0);
-            assert_eq!(p.peek(), Some(Ok(SyntaxKind::RParen)));
+            assert_eq!(p.peek(), Some(SyntaxKind::RParen));
             p.bump();
         }
         _ => {}
@@ -31,10 +31,10 @@ fn expr_binding_power(p: &mut Parser, minimum_binding_power: u8) {
 
     loop {
         let op = match p.peek() {
-            Some(Ok(SyntaxKind::Plus)) => InfixOp::Add,
-            Some(Ok(SyntaxKind::Minus)) => InfixOp::Sub,
-            Some(Ok(SyntaxKind::Star)) => InfixOp::Mul,
-            Some(Ok(SyntaxKind::Slash)) => InfixOp::Div,
+            Some(SyntaxKind::Plus) => InfixOp::Add,
+            Some(SyntaxKind::Minus) => InfixOp::Sub,
+            Some(SyntaxKind::Star) => InfixOp::Mul,
+            Some(SyntaxKind::Slash) => InfixOp::Div,
             _ => return,
         };
 
