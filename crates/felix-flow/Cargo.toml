@@ -10,6 +10,7 @@ logos = "0.14.0"
 num-derive = "0.4.2"
 num-traits = "0.2.19"
 rowan = "0.15.15"
+smol_str = "0.2.2"
 
 [dev-dependencies]
 expect-test = "1.5.0"
