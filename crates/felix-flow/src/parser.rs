@@ -11,7 +11,6 @@ use event::Event;
 use expr::expr;
 use rowan::GreenNode;
 use sink::Sink;
-use smol_str::SmolStr;
 use source::Source;
 
 struct Parser<'l, 'input> {

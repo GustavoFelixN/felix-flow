@@ -266,19 +266,19 @@ mod tests {
         check(
             " 1 +   2* 3 ",
             expect![[r#"
-Root@0..12
-  Whitespace@0..1 " "
-  BinaryExpr@1..12
-    Number@1..2 "1"
-    Whitespace@2..3 " "
-    Plus@3..4 "+"
-    Whitespace@4..7 "   "
-    BinaryExpr@7..12
-      Number@7..8 "2"
-      Star@8..9 "*"
-      Whitespace@9..10 " "
-      Number@10..11 "3"
-      Whitespace@11..12 " ""#]],
+            Root@0..12
+              Whitespace@0..1 " "
+              BinaryExpr@1..12
+                Number@1..2 "1"
+                Whitespace@2..3 " "
+                Plus@3..4 "+"
+                Whitespace@4..7 "   "
+                BinaryExpr@7..12
+                  Number@7..8 "2"
+                  Star@8..9 "*"
+                  Whitespace@9..10 " "
+                  Number@10..11 "3"
+                  Whitespace@11..12 " ""#]],
         );
     }
 }
