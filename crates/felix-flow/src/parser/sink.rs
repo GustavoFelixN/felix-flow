@@ -22,24 +22,30 @@ impl<'l, 'input> Sink<'l, 'input> {
     }
 
     pub(super) fn finish(mut self) -> GreenNode {
-        let mut reordered_events = self.events.clone();
+        for idx in 0..self.events.len() {
+            match std::mem::replace(&mut self.events[idx], Event::Placeholder) {
+                Event::StartNode {
+                    kind,
+                    foward_parent,
+                } => {
+                    if let Some(fp) = foward_parent {
+                        if let Event::StartNode { kind, .. } =
+                            std::mem::replace(&mut self.events[idx + fp], Event::Placeholder)
+                        {
+                            self.builder
+                                .start_node(FelixFlowLanguage::kind_to_raw(kind));
+                        } else {
+                            unreachable!()
+                        }
+                    }
 
-        for (id, event) in self.events.iter().enumerate() {
-            if let Event::StartNodeAt { kind, checkpoint } = event {
-                reordered_events.remove(id);
-                reordered_events.insert(*checkpoint, Event::StartNode { kind: *kind })
-            }
-        }
-
-        for event in reordered_events {
-            match event {
-                Event::StartNode { kind } => self
-                    .builder
-                    .start_node(FelixFlowLanguage::kind_to_raw(kind)),
+                    self.builder
+                        .start_node(FelixFlowLanguage::kind_to_raw(kind));
+                }
                 Event::StartNodeAt { .. } => unreachable!(),
                 Event::AddToken { kind, text } => self.token(kind, text),
                 Event::FinishNode => self.builder.finish_node(),
-                Event::Placeholder => unreachable!(),
+                Event::Placeholder => {}
             }
 
             self.eat_trivia();
