@@ -55,6 +55,10 @@ impl<'l, 'input> Parser<'l, 'input> {
 
         Marker::new(pos)
     }
+
+    fn at(&mut self, kind: SyntaxKind) -> bool {
+        self.peek() == Some(kind)
+    }
 }
 
 pub fn parse(input: &str) -> Parse {
