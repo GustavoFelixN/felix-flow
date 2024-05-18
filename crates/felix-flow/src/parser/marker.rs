@@ -1,5 +1,3 @@
-use core::panic;
-
 use super::event::Event;
 use super::Parser;
 use crate::lexer::SyntaxKind;

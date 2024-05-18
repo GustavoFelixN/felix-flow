@@ -7,10 +7,6 @@ pub(super) enum Event {
         kind: SyntaxKind,
         foward_parent: Option<usize>,
     },
-    StartNodeAt {
-        kind: SyntaxKind,
-        checkpoint: usize,
-    },
     AddToken {
         kind: SyntaxKind,
         text: SmolStr,

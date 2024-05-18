@@ -54,7 +54,6 @@ impl<'l, 'input> Sink<'l, 'input> {
                             .start_node(FelixFlowLanguage::kind_to_raw(kind));
                     }
                 }
-                Event::StartNodeAt { .. } => unreachable!(),
                 Event::AddToken { kind, text } => self.token(kind, text),
                 Event::FinishNode => self.builder.finish_node(),
                 Event::Placeholder => {}
