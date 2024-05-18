@@ -147,21 +147,21 @@ mod tests {
         check(
             "1+2+3+4",
             expect![[r#"
-                Root@0..7
-                  BinaryExpr@0..3
-                    Literal@0..1
-                      Number@0..1 "1"
-                    Plus@1..2 "+"
-                    Literal@2..3
-                      Number@2..3 "2"
-                  Plus@3..4 "+"
-                  BinaryExpr@4..7
-                    BinaryExpr@4..5
-                      Literal@4..5
-                        Number@4..5 "3"
-                    Plus@5..6 "+"
-                    Literal@6..7
-                      Number@6..7 "4""#]],
+Root@0..7
+  BinaryExpr@0..7
+    BinaryExpr@0..5
+      BinaryExpr@0..3
+        Literal@0..1
+          Number@0..1 "1"
+        Plus@1..2 "+"
+        Literal@2..3
+          Number@2..3 "2"
+      Plus@3..4 "+"
+      Literal@4..5
+        Number@4..5 "3"
+    Plus@5..6 "+"
+    Literal@6..7
+      Number@6..7 "4""#]],
         );
     }
 
@@ -171,18 +171,18 @@ mod tests {
             "1+2*3-4",
             expect![[r#"
                 Root@0..7
-                  BinaryExpr@0..5
-                    Literal@0..1
-                      Number@0..1 "1"
-                    Plus@1..2 "+"
-                    BinaryExpr@2..5
-                      Literal@2..3
-                        Number@2..3 "2"
-                      Star@3..4 "*"
-                      Literal@4..5
-                        Number@4..5 "3"
-                  Minus@5..6 "-"
-                  BinaryExpr@6..7
+                  BinaryExpr@0..7
+                    BinaryExpr@0..5
+                      Literal@0..1
+                        Number@0..1 "1"
+                      Plus@1..2 "+"
+                      BinaryExpr@2..5
+                        Literal@2..3
+                          Number@2..3 "2"
+                        Star@3..4 "*"
+                        Literal@4..5
+                          Number@4..5 "3"
+                    Minus@5..6 "-"
                     Literal@6..7
                       Number@6..7 "4""#]],
         );
@@ -199,6 +199,7 @@ mod tests {
                       Number@1..3 "10""#]],
         );
     }
+
     #[test]
     fn negation_has_higher_binding_power_than_infix_operators() {
         check(
@@ -338,20 +339,20 @@ mod tests {
             expect![[r##"
                 Root@0..35
                   Whitespace@0..1 "\n"
-                  BinaryExpr@1..21
-                    Literal@1..5
-                      Number@1..2 "1"
-                      Whitespace@2..5 "\n  "
-                    Plus@5..6 "+"
-                    Whitespace@6..7 " "
-                    Literal@7..21
-                      Number@7..8 "1"
-                      Whitespace@8..9 " "
-                      Comment@9..18 "# Add one"
-                      Whitespace@18..21 "\n  "
-                  Plus@21..22 "+"
-                  Whitespace@22..23 " "
-                  BinaryExpr@23..35
+                  BinaryExpr@1..35
+                    BinaryExpr@1..21
+                      Literal@1..5
+                        Number@1..2 "1"
+                        Whitespace@2..5 "\n  "
+                      Plus@5..6 "+"
+                      Whitespace@6..7 " "
+                      Literal@7..21
+                        Number@7..8 "1"
+                        Whitespace@8..9 " "
+                        Comment@9..18 "# Add one"
+                        Whitespace@18..21 "\n  "
+                    Plus@21..22 "+"
+                    Whitespace@22..23 " "
                     Literal@23..35
                       Number@23..25 "10"
                       Whitespace@25..26 " "

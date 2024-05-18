@@ -28,19 +28,31 @@ impl<'l, 'input> Sink<'l, 'input> {
                     kind,
                     foward_parent,
                 } => {
-                    if let Some(fp) = foward_parent {
-                        if let Event::StartNode { kind, .. } =
-                            std::mem::replace(&mut self.events[idx + fp], Event::Placeholder)
+                    let mut kinds = vec![kind];
+
+                    let mut idx = idx;
+                    let mut foward_parent = foward_parent;
+
+                    while let Some(fp) = foward_parent {
+                        idx += fp;
+
+                        foward_parent = if let Event::StartNode {
+                            kind,
+                            foward_parent,
+                        } =
+                            std::mem::replace(&mut self.events[idx], Event::Placeholder)
                         {
-                            self.builder
-                                .start_node(FelixFlowLanguage::kind_to_raw(kind));
+                            kinds.push(kind);
+                            foward_parent
                         } else {
                             unreachable!()
-                        }
+                        };
                     }
 
-                    self.builder
-                        .start_node(FelixFlowLanguage::kind_to_raw(kind));
+                    for kind in kinds.into_iter().rev() {
+                        self.builder
+                            .start_node(FelixFlowLanguage::kind_to_raw(kind));
+                    }
                 }
                 Event::StartNodeAt { .. } => unreachable!(),
                 Event::AddToken { kind, text } => self.token(kind, text),
