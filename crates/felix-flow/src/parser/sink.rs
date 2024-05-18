@@ -1,8 +1,8 @@
 use super::event::Event;
-use crate::lexer::{SyntaxKind, Token};
+use crate::lexer::Token;
 use crate::syntax::FelixFlowLanguage;
 use rowan::{GreenNode, GreenNodeBuilder, Language};
-use smol_str::SmolStr;
+use std::mem;
 
 pub(super) struct Sink<'t, 'input> {
     builder: GreenNodeBuilder<'static>,
@@ -23,7 +23,7 @@ impl<'t, 'input> Sink<'t, 'input> {
 
     pub(super) fn finish(mut self) -> GreenNode {
         for idx in 0..self.events.len() {
-            match std::mem::replace(&mut self.events[idx], Event::Placeholder) {
+            match mem::replace(&mut self.events[idx], Event::Placeholder) {
                 Event::StartNode {
                     kind,
                     foward_parent,
@@ -40,7 +40,7 @@ impl<'t, 'input> Sink<'t, 'input> {
                             kind,
                             foward_parent,
                         } =
-                            std::mem::replace(&mut self.events[idx], Event::Placeholder)
+                            mem::replace(&mut self.events[idx], Event::Placeholder)
                         {
                             kinds.push(kind);
                             foward_parent
@@ -54,7 +54,7 @@ impl<'t, 'input> Sink<'t, 'input> {
                             .start_node(FelixFlowLanguage::kind_to_raw(kind));
                     }
                 }
-                Event::AddToken { kind, text } => self.token(kind, text),
+                Event::AddToken => self.token(),
                 Event::FinishNode => self.builder.finish_node(),
                 Event::Placeholder => {}
             }
@@ -65,9 +65,10 @@ impl<'t, 'input> Sink<'t, 'input> {
         self.builder.finish()
     }
 
-    fn token(&mut self, kind: SyntaxKind, text: SmolStr) {
+    fn token(&mut self) {
+        let Token { kind, text } = self.tokens[self.cursor];
         self.builder
-            .token(FelixFlowLanguage::kind_to_raw(kind), text.as_str());
+            .token(FelixFlowLanguage::kind_to_raw(kind), text);
         self.cursor += 1;
     }
 
@@ -77,7 +78,7 @@ impl<'t, 'input> Sink<'t, 'input> {
                 break;
             }
 
-            self.token(token.kind, token.text.into())
+            self.token()
         }
     }
 }
