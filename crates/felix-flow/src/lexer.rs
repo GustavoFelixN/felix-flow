@@ -50,7 +50,7 @@ pub(super) enum SyntaxKind {
     Comment,
 
     Root,
-    BinaryExpr,
+    InfixExpr,
     Literal,
     ParenExpr,
     PrefixExpr,
