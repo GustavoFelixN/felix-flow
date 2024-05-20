@@ -7,11 +7,11 @@ pub(crate) struct Source<'t, 'input> {
 }
 
 impl<'t, 'input> Source<'t, 'input> {
-    pub(super) fn new(tokens: &'t [Token<'input>]) -> Self {
+    pub(crate) fn new(tokens: &'t [Token<'input>]) -> Self {
         Self { tokens, cursor: 0 }
     }
 
-    pub(super) fn next_token(&mut self) -> Option<&'t Token<'input>> {
+    pub(crate) fn next_token(&mut self) -> Option<&'t Token<'input>> {
         self.eat_trivia();
         let token = self.tokens.get(self.cursor)?;
         self.cursor += 1;
@@ -19,7 +19,7 @@ impl<'t, 'input> Source<'t, 'input> {
         Some(token)
     }
 
-    pub(super) fn peek_kind(&mut self) -> Option<SyntaxKind> {
+    pub(crate) fn peek_kind(&mut self) -> Option<SyntaxKind> {
         self.eat_trivia();
         self.peek_raw()
     }

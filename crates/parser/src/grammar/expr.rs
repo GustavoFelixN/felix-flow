@@ -1,5 +1,4 @@
-use super::{marker::CompletedMarker, Parser};
-use syntax::SyntaxKind;
+use super::*;
 
 pub(super) fn expr(p: &mut Parser) {
     expr_binding_power(p, 0);
@@ -122,7 +121,7 @@ impl UnaryOp {
 
 #[cfg(test)]
 mod tests {
-    use super::super::check;
+    use crate::check;
     use expect_test::expect;
 
     #[test]
