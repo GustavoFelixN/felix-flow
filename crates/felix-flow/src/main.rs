@@ -1,4 +1,4 @@
-use felix_flow::parser::parse;
+use parser::parse;
 use std::io::{self, Write};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
