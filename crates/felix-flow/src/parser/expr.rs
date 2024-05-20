@@ -1,5 +1,5 @@
 use super::{marker::CompletedMarker, Parser};
-use crate::lexer::SyntaxKind;
+use crate::syntax::SyntaxKind;
 
 pub(super) fn expr(p: &mut Parser) {
     expr_binding_power(p, 0);

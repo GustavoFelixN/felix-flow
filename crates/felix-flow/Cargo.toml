@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 drop_bomb = "0.1.5"
-logos = "0.14.0"
+lexer = {path = "../lexer"}
 num-derive = "0.4.2"
 num-traits = "0.2.19"
 rowan = "0.15.15"
