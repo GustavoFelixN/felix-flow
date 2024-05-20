@@ -1,8 +1,11 @@
+#[macro_use]
+extern crate num_derive;
+
 use lexer::TokenKind;
 use num_traits::{FromPrimitive, ToPrimitive};
 
 #[derive(Debug, Clone, Copy, PartialEq, FromPrimitive, ToPrimitive, Eq, PartialOrd, Ord, Hash)]
-pub(crate) enum SyntaxKind {
+pub enum SyntaxKind {
     Whitespace,
     FnKw,
     LetKw,
@@ -27,7 +30,7 @@ pub(crate) enum SyntaxKind {
 }
 
 impl SyntaxKind {
-    pub(crate) fn is_trivia(self) -> bool {
+    pub fn is_trivia(self) -> bool {
         matches!(self, Self::Whitespace | Self::Comment)
     }
 }
@@ -55,7 +58,7 @@ impl From<TokenKind> for SyntaxKind {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub(crate) struct FelixFlowLanguage {}
+pub struct FelixFlowLanguage {}
 
 impl rowan::Language for FelixFlowLanguage {
     type Kind = SyntaxKind;
@@ -69,4 +72,4 @@ impl rowan::Language for FelixFlowLanguage {
     }
 }
 
-pub(crate) type SyntaxNode = rowan::SyntaxNode<FelixFlowLanguage>;
+pub type SyntaxNode = rowan::SyntaxNode<FelixFlowLanguage>;
