@@ -1,8 +1,8 @@
 use super::event::Event;
-use crate::syntax::{FelixFlowLanguage, SyntaxKind};
 use lexer::Token;
 use rowan::{GreenNode, GreenNodeBuilder, Language};
 use std::mem;
+use syntax::{FelixFlowLanguage, SyntaxKind};
 
 pub(super) struct Sink<'t, 'input> {
     builder: GreenNodeBuilder<'static>,

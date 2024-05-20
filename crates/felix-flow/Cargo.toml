@@ -8,10 +8,8 @@ edition = "2021"
 [dependencies]
 drop_bomb = "0.1.5"
 lexer = {path = "../lexer"}
-num-derive = "0.4.2"
-num-traits = "0.2.19"
 rowan = "0.15.15"
-smol_str = "0.2.2"
+syntax = {path = "../syntax"}
 
 [dev-dependencies]
 expect-test = "1.5.0"
