@@ -49,10 +49,8 @@ dependencies = [
  "drop_bomb",
  "expect-test",
  "lexer",
- "num-derive",
- "num-traits",
  "rowan",
- "smol_str",
+ "syntax",
 ]
 
 [[package]]
@@ -236,6 +234,17 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
+]
+
+[[package]]
+name = "syntax"
+version = "0.1.0"
+dependencies = [
+ "lexer",
+ "num-derive",
+ "num-traits",
+ "rowan",
+ "smol_str",
 ]
 
 [[package]]
