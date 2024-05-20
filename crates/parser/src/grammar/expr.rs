@@ -38,8 +38,10 @@ fn lhs(p: &mut Parser) -> Option<CompletedMarker> {
         Some(SyntaxKind::Ident) => variable_ref(p),
         Some(SyntaxKind::Minus) => prefix_expr(p),
         Some(SyntaxKind::LParen) => paren_expr(p),
-        //WARN: vai dar bosta aqui
-        _ => return None,
+        _ => {
+            p.error();
+            return None;
+        }
     };
 
     Some(cm)
