@@ -10,5 +10,4 @@ lexer = {path = "../lexer"}
 num-derive = "0.4.2"
 num-traits = "0.2.19"
 rowan = "0.15.15"
-smol_str = "0.2.2"
 
