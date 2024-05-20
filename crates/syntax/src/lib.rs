@@ -26,6 +26,7 @@ pub enum SyntaxKind {
     Literal,
     ParenExpr,
     PrefixExpr,
+    VariableDef,
     VariableRef,
 }
 
