@@ -98,4 +98,14 @@ mod tests {
             "error at 100..105: expected number, identifier, '-' or '(', but found 'let'",
         )
     }
+
+    #[test]
+    fn two_expected_did_find() {
+        check(
+            vec![SyntaxKind::Plus, SyntaxKind::Minus],
+            Some(SyntaxKind::Equals),
+            0..1,
+            "error at 0..1: expected '+' or '-', but found '='"
+        );
+    }
 }
