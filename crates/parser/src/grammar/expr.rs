@@ -395,11 +395,12 @@ mod tests {
         check(
             "(foo",
             expect![[r#"
-Root@0..4
-  ParenExpr@0..4
-    LParen@0..1 "("
-    VariableRef@1..4
-      Ident@1..4 "foo""#]],
+                Root@0..4
+                  ParenExpr@0..4
+                    LParen@0..1 "("
+                    VariableRef@1..4
+                      Ident@1..4 "foo"
+                error at 1..4: expected '+', '-', '*', '/' or ')'"#]],
         );
     }
 }

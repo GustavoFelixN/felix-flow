@@ -39,8 +39,7 @@ impl Parse {
             s.push_str(&format!("\n{}", error));
         }
 
-        let formatted = format!("{:#?}", syntax_node);
-        formatted[0..formatted.len() - 1].to_string()
+        s
     }
 }
 
