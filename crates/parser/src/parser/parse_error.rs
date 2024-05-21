@@ -1,4 +1,4 @@
-use std::fmt::{write, Display};
+use std::fmt::Display;
 
 use syntax::SyntaxKind;
 use text_size::TextRange;
