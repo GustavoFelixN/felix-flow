@@ -4,6 +4,10 @@ extern crate num_derive;
 use lexer::TokenKind;
 use num_traits::{FromPrimitive, ToPrimitive};
 
+pub type SyntaxNode = rowan::SyntaxNode<FelixFlowLanguage>;
+pub type SyntaxToken = rowan::SyntaxToken<FelixFlowLanguage>;
+pub type SyntaxElement = rowan::SyntaxElement<FelixFlowLanguage>;
+
 #[derive(Debug, Clone, Copy, PartialEq, FromPrimitive, ToPrimitive, Eq, PartialOrd, Ord, Hash)]
 pub enum SyntaxKind {
     Whitespace,
@@ -67,5 +71,3 @@ impl rowan::Language for FelixFlowLanguage {
         rowan::SyntaxKind(kind.to_u16().unwrap())
     }
 }
-
-pub type SyntaxNode = rowan::SyntaxNode<FelixFlowLanguage>;
