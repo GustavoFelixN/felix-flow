@@ -1,9 +1,9 @@
 use super::event::Event;
 use crate::{parser::ParseError, Parse};
-use lexer::Token;
+use lexer::{Token, TokenKind};
 use rowan::{GreenNodeBuilder, Language};
 use std::mem;
-use syntax::{FelixFlowLanguage, SyntaxKind};
+use syntax::FelixFlowLanguage;
 
 pub(crate) struct Sink<'t, 'input> {
     builder: GreenNodeBuilder<'static>,
@@ -81,7 +81,7 @@ impl<'t, 'input> Sink<'t, 'input> {
 
     fn eat_trivia(&mut self) {
         while let Some(token) = self.tokens.get(self.cursor) {
-            if !SyntaxKind::from(token.kind).is_trivia() {
+            if !TokenKind::from(token.kind).is_trivia() {
                 break;
             }
 

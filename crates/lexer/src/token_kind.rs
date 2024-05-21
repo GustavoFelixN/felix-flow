@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use logos::Logos;
 
 #[derive(Logos, Debug, PartialEq, Eq, Clone, Copy, PartialOrd, Ord, Hash)]
@@ -46,6 +48,34 @@ pub enum TokenKind {
 
     #[regex("#.*")]
     Comment,
+}
+
+impl TokenKind {
+    pub fn is_trivia(self) -> bool {
+        matches!(self, Self::Whitespace | Self::Comment)
+    }
+}
+
+impl Display for TokenKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(match self {
+            TokenKind::Whitespace => "whitespace",
+            TokenKind::FnKw => "'fn'",
+            TokenKind::LetKw => "'let'",
+            TokenKind::Ident => "identifier",
+            TokenKind::Number => "number",
+            TokenKind::Plus => "'+'",
+            TokenKind::Minus => "'-'",
+            TokenKind::Star => "'*'",
+            TokenKind::Slash => "'/'",
+            TokenKind::Equals => "'='",
+            TokenKind::LParen => "'('",
+            TokenKind::RParen => "')'",
+            TokenKind::LBrace => "'{'",
+            TokenKind::RBrace => "'}'",
+            TokenKind::Comment => "comment",
+        })
+    }
 }
 
 #[cfg(test)]

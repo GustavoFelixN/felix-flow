@@ -6,16 +6,16 @@ pub(crate) use parse_error::ParseError;
 use crate::event::Event;
 use crate::grammar;
 use crate::source::Source;
-use lexer::Token;
+use lexer::{Token, TokenKind};
 use marker::Marker;
 use syntax::SyntaxKind;
 
-const RECOVERY_SET: [SyntaxKind; 1] = [SyntaxKind::LetKw];
+const RECOVERY_SET: [TokenKind; 1] = [TokenKind::LetKw];
 
 pub(crate) struct Parser<'t, 'input> {
     source: Source<'t, 'input>,
     events: Vec<Event>,
-    expected_kinds: Vec<SyntaxKind>,
+    expected_kinds: Vec<TokenKind>,
 }
 
 impl<'t, 'input> Parser<'t, 'input> {
@@ -32,7 +32,7 @@ impl<'t, 'input> Parser<'t, 'input> {
         self.events
     }
 
-    fn peek(&mut self) -> Option<SyntaxKind> {
+    fn peek(&mut self) -> Option<TokenKind> {
         self.source.peek_kind()
     }
 
@@ -49,12 +49,12 @@ impl<'t, 'input> Parser<'t, 'input> {
         Marker::new(pos)
     }
 
-    pub(crate) fn at(&mut self, kind: SyntaxKind) -> bool {
+    pub(crate) fn at(&mut self, kind: TokenKind) -> bool {
         self.expected_kinds.push(kind);
         self.peek() == Some(kind)
     }
 
-    pub(crate) fn expect(&mut self, kind: SyntaxKind) {
+    pub(crate) fn expect(&mut self, kind: TokenKind) {
         if self.at(kind) {
             self.bump();
         } else {
@@ -66,7 +66,7 @@ impl<'t, 'input> Parser<'t, 'input> {
         let current_token = self.source.peek_token();
 
         let (found, range) = if let Some(Token { kind, range, .. }) = current_token {
-            (Some((*kind).into()), *range)
+            (Some(*kind), *range)
         } else {
             (None, self.source.last_token_range().unwrap())
         };
@@ -84,7 +84,7 @@ impl<'t, 'input> Parser<'t, 'input> {
         }
     }
 
-    fn at_set(&mut self, set: &[SyntaxKind]) -> bool {
+    fn at_set(&mut self, set: &[TokenKind]) -> bool {
         self.peek().map_or(false, |k| set.contains(&k))
     }
 
