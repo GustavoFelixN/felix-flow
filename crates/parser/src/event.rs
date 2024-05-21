@@ -1,6 +1,7 @@
+use crate::parser::ParseError;
 use syntax::SyntaxKind;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq)]
 pub(crate) enum Event {
     StartNode {
         kind: SyntaxKind,
@@ -9,4 +10,5 @@ pub(crate) enum Event {
     AddToken,
     FinishNode,
     Placeholder,
+    Error(ParseError),
 }

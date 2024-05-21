@@ -1,4 +1,5 @@
 use super::event::Event;
+use crate::{parser::ParseError, Parse};
 use lexer::Token;
 use rowan::{GreenNode, GreenNodeBuilder, Language};
 use std::mem;
@@ -9,6 +10,7 @@ pub(crate) struct Sink<'t, 'input> {
     tokens: &'t [Token<'input>],
     cursor: usize,
     events: Vec<Event>,
+    errors: Vec<ParseError>,
 }
 
 impl<'t, 'input> Sink<'t, 'input> {
@@ -18,10 +20,11 @@ impl<'t, 'input> Sink<'t, 'input> {
             tokens,
             cursor: 0,
             events,
+            errors: Vec::new(),
         }
     }
 
-    pub(crate) fn finish(mut self) -> GreenNode {
+    pub(crate) fn finish(mut self) -> Parse {
         for idx in 0..self.events.len() {
             match mem::replace(&mut self.events[idx], Event::Placeholder) {
                 Event::StartNode {
@@ -57,16 +60,20 @@ impl<'t, 'input> Sink<'t, 'input> {
                 Event::AddToken => self.token(),
                 Event::FinishNode => self.builder.finish_node(),
                 Event::Placeholder => {}
+                Event::Error(error) => self.errors.push(error),
             }
 
             self.eat_trivia();
         }
 
-        self.builder.finish()
+        Parse {
+            green_node: self.builder.finish(),
+            errors: self.errors,
+        }
     }
 
     fn token(&mut self) {
-        let Token { kind, text } = self.tokens[self.cursor];
+        let Token { kind, text, .. } = self.tokens[self.cursor];
         self.builder
             .token(FelixFlowLanguage::kind_to_raw(kind.into()), text.into());
         self.cursor += 1;
