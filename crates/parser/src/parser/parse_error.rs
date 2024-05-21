@@ -14,11 +14,24 @@ impl Display for ParseError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "error at {}..{}: expected {}",
+            "error at {}..{}: expected ",
             u32::from(self.range.start()),
             u32::from(self.range.end()),
-            self.expected[0],
         )?;
+
+        let num_expected = self.expected.len();
+        let is_first = |idx| idx == 0;
+        let is_last = |idx| idx == num_expected - 1;
+
+        for (idx, expected_kind) in self.expected.iter().enumerate() {
+            if is_first(idx) {
+                write!(f, "{}", expected_kind)?;
+            } else if is_last(idx) {
+                write!(f, " or {}", expected_kind)?;
+            } else {
+                write!(f, ", {}", expected_kind)?;
+            }
+        }
 
         if let Some(found) = self.found {
             write!(f, ", but found {}", found)?;
@@ -68,6 +81,21 @@ mod tests {
             None,
             5..6,
             "error at 5..6: expected ')'",
+        )
+    }
+
+    #[test]
+    fn multiple_expected_did_find() {
+        check(
+            vec![
+                SyntaxKind::Number,
+                SyntaxKind::Ident,
+                SyntaxKind::Minus,
+                SyntaxKind::LParen,
+            ],
+            Some(SyntaxKind::LetKw),
+            100..105,
+            "error at 100..105: expected number, identifier, '-' or '(', but found 'let'",
         )
     }
 }
