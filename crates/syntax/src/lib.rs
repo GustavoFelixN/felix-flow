@@ -3,6 +3,7 @@ extern crate num_derive;
 
 use lexer::TokenKind;
 use num_traits::{FromPrimitive, ToPrimitive};
+use std::fmt::Display;
 
 #[derive(Debug, Clone, Copy, PartialEq, FromPrimitive, ToPrimitive, Eq, PartialOrd, Ord, Hash)]
 pub enum SyntaxKind {
@@ -56,6 +57,29 @@ impl From<TokenKind> for SyntaxKind {
             TokenKind::RBrace => Self::RBrace,
             TokenKind::Comment => Self::Comment,
         }
+    }
+}
+
+impl Display for SyntaxKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(match self {
+            SyntaxKind::Whitespace => "whitespace",
+            SyntaxKind::FnKw => "'fn'",
+            SyntaxKind::LetKw => "'let'",
+            SyntaxKind::Ident => "identifier",
+            SyntaxKind::Number => "number",
+            SyntaxKind::Plus => "'+'",
+            SyntaxKind::Minus => "'-'",
+            SyntaxKind::Star => "'*'",
+            SyntaxKind::Slash => "'/'",
+            SyntaxKind::Equals => "'='",
+            SyntaxKind::LParen => "'('",
+            SyntaxKind::RParen => "')'",
+            SyntaxKind::LBrace => "'{'",
+            SyntaxKind::RBrace => "'}'",
+            SyntaxKind::Comment => "comment",
+            _ => unreachable!(),
+        })
     }
 }
 
