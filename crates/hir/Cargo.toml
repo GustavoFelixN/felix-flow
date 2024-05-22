@@ -8,5 +8,6 @@ edition = "2021"
 [dependencies]
 arena = { path = "../arena" }
 ast = { path = "../ast" }
+la-arena = "0.3.1"
 smol_str = "0.2.2"
 syntax = { path = "../syntax" }
