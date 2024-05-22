@@ -54,6 +54,7 @@ dependencies = [
 name = "felix-flow"
 version = "0.1.0"
 dependencies = [
+ "ast",
  "parser",
 ]
 
