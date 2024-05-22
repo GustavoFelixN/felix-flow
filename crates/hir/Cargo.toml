@@ -7,3 +7,5 @@ edition = "2021"
 
 [dependencies]
 smol_str = "0.2.2"
+ast = { path = "../ast" }
+syntax = { path = "../syntax" }
