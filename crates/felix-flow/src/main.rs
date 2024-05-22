@@ -26,6 +26,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             })
             .collect::<Vec<_>>());
 
+        dbg!(hir::lower(root).collect::<Vec<_>>());
+
         input.clear()
     }
 }
